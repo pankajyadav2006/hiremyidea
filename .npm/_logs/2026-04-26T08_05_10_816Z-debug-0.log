@@ -1,0 +1,23 @@
+0 verbose cli /Users/pankajyadav/.nvm/versions/node/v20.20.0/bin/node /Users/pankajyadav/.nvm/versions/node/v20.20.0/lib/node_modules/npm/bin/npm-cli.js
+1 info using npm@11.11.1
+2 info using node@v20.20.0
+3 silly config load:file:/Users/pankajyadav/.nvm/versions/node/v20.20.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/pankajyadav/hiremyidea/assignment-app/.npmrc
+5 silly config load:file:/Users/pankajyadav/.nvm/versions/node/v20.20.0/etc/npmrc
+6 verbose title npm exec expo start --ios
+7 verbose argv "exec" "--" "expo" "start" "--ios"
+8 verbose logfile logs-max:10 dir:/Users/pankajyadav/hiremyidea/assignment-app/.npm/_logs/2026-04-26T08_05_10_816Z-
+9 verbose logfile /Users/pankajyadav/hiremyidea/assignment-app/.npm/_logs/2026-04-26T08_05_10_816Z-debug-0.log
+10 silly logfile done cleaning log files
+11 http fetch GET 200 https://registry.npmjs.org/npm 211ms
+12 verbose cwd /Users/pankajyadav/hiremyidea/assignment-app
+13 verbose os Darwin 25.3.0
+14 verbose node v20.20.0
+15 verbose npm  v11.11.1
+16 notice
+16 notice New [33mminor[39m version of npm available! [33m11.11.1[39m -> [34m11.13.0[39m
+16 notice Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.13.0[39m
+16 notice To update run: [4mnpm install -g npm@11.13.0[24m
+16 notice  { force: true, [Symbol(proc-log.meta)]: true }
+17 verbose exit 7
+18 verbose code 7
