@@ -22,12 +22,15 @@ import Svg, {
   Circle,
   Defs,
   LinearGradient,
+  RadialGradient,
   Stop,
   Rect,
   G,
   Line,
   Text as SvgText,
+  ClipPath,
 } from 'react-native-svg';
+// import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -90,6 +93,29 @@ const MOCK_DATA = {
 
 // --- Sub-components ---
 
+const ScreenBackground = () => (
+  <View style={StyleSheet.absoluteFill}>
+    <Svg height="100%" width="100%">
+      <Defs>
+        <RadialGradient
+          id="bgGrad"
+          cx="100%"
+          cy="0%"
+          r="150%"
+          fx="100%"
+          fy="0%"
+          gradientTransform="scale(1, 0.15)"
+        >
+          <Stop offset="0" stopColor="#E99597" stopOpacity="0.25" />
+          <Stop offset="0.5" stopColor="#E99597" stopOpacity="0.08" />
+          <Stop offset="1" stopColor="#F5FAF9" stopOpacity="0" />
+        </RadialGradient>
+      </Defs>
+      <Rect x="0" y="0" width="100%" height="100%" fill="url(#bgGrad)" />
+    </Svg>
+  </View>
+);
+
 const HeaderNavigation = () => (
   <View style={styles.header}>
     <View style={styles.menuIcon}>
@@ -110,192 +136,107 @@ const HeaderNavigation = () => (
   </View>
 );
 
-const StabilitySummary = () => {
-  const chartHeight = 160;
-  const chartWidth = CARD_WIDTH - 60;
-  const data = MOCK_DATA.stability.data;
-  
-  const progress = useSharedValue(0);
-  const opacity = useSharedValue(0);
+const StabilitySummary = () => { 
+  const cardWidth = CARD_WIDTH; 
+  const cardHeight = 305; 
+ 
+  return ( 
+    <View style={styles.stabilityContainer}> 
+      <Text style={styles.sectionTitle}>Stability Summary</Text> 
+      <View style={[styles.stabilityCardContainer, { width: cardWidth, height: cardHeight }]}> 
+        <View 
+          style={[StyleSheet.absoluteFill, { borderRadius: 12, backgroundColor: 'rgba(110, 140, 130, 0.1)' }]} 
+        /> 
+ 
+        <View style={styles.stabilityContent}> 
+          <Text style={styles.stabilityDescription}> 
+            Based on your recent logs and symptom patterns. 
+          </Text> 
+ 
+          <View style={styles.stabilityScoreBox}> 
+            <Text style={styles.stabilityScoreLabelText}>Stability Score</Text> 
+            <Text style={styles.stabilityScoreValueText}>78%</Text> 
+          </View> 
+ 
+          <View style={styles.stabilityChartBox}> 
+            {/* Y Axis Labels */} 
+            <View style={styles.stabilityYAxisLabels}> 
+              <Text style={styles.stabilityAxisText}>32d</Text> 
+              <Text style={styles.stabilityAxisText}>28d</Text> 
+              <Text style={styles.stabilityAxisText}>24d</Text> 
+            </View> 
+ 
+            <View style={styles.stabilitySvgWrapper}> 
+              <Svg width="100%" height={120} viewBox="0 0 300 120"> 
+                <Defs> 
+                  <LinearGradient id="gradTop" x1="0" y1="0" x2="0" y2="1"> 
+                    <Stop offset="0" stopColor="#E0D4FC" stopOpacity="0.8" /> 
+                    <Stop offset="1" stopColor="#E0D4FC" stopOpacity="0.1" /> 
+                  </LinearGradient> 
+                  <LinearGradient id="gradMid" x1="0" y1="0" x2="0" y2="1"> 
+                    <Stop offset="0" stopColor="#A78BFA" stopOpacity="0.9" /> 
+                    <Stop offset="1" stopColor="#A78BFA" stopOpacity="0.2" /> 
+                  </LinearGradient> 
+                  <LinearGradient id="gradBot" x1="0" y1="0" x2="0" y2="1"> 
+                    <Stop offset="0" stopColor="#F1EAFF" stopOpacity="0.7" /> 
+                    <Stop offset="1" stopColor="#F1EAFF" stopOpacity="0.1" /> 
+                  </LinearGradient> 
+                  <ClipPath id="clipLeft"> 
+                    <Path d="M0,0 H200 V120 H0 Z" /> 
+                  </ClipPath> 
+                  <ClipPath id="clipRight"> 
+                    <Path d="M200,0 H300 V120 H200 Z" /> 
+                  </ClipPath> 
+                </Defs> 
+ 
+                {/* Historical Area (Lower Opacity) */} 
+                <G clipPath="url(#clipLeft)" opacity={0.5}> 
+                  <Path d="M0,115 C80,110 180,60 300,30 L300,120 L0,120 Z" fill="url(#gradTop)" /> 
+                  <Path d="M0,115 C100,112 190,85 300,60 L300,120 L0,120 Z" fill="url(#gradMid)" /> 
+                  <Path d="M0,115 C120,114 200,105 300,90 L300,120 L0,120 Z" fill="url(#gradBot)" /> 
+                </G> 
+ 
+                {/* Projected Area (Full Opacity) */} 
+                <G clipPath="url(#clipRight)"> 
+                  <Path d="M0,115 C80,110 180,60 300,30 L300,120 L0,120 Z" fill="url(#gradTop)" /> 
+                  <Path d="M0,115 C100,112 190,85 300,60 L300,120 L0,120 Z" fill="url(#gradMid)" /> 
+                  <Path d="M0,115 C120,114 200,105 300,90 L300,120 L0,120 Z" fill="url(#gradBot)" /> 
+                </G> 
+ 
+                {/* Vertical Dashed Line at Mar */} 
+                <Path 
+                  d="M200,25 L200,115" 
+                  stroke="#8BAFA4" 
+                  strokeWidth="2" 
+                  strokeDasharray="12, 6" 
+                /> 
+                <Circle cx="200" cy="25" r="6" fill="#8BAFA4" /> 
+              </Svg> 
+ 
+              <View style={styles.stabilityXAxisLabels}> 
+                <Text style={styles.stabilityAxisText}>Jan</Text> 
+                <Text style={styles.stabilityAxisText}>Feb</Text> 
+                <Text style={[styles.stabilityAxisText, styles.stabilityAxisTextBold]}>Mar</Text> 
+                <Text style={styles.stabilityAxisText}>Apr</Text> 
+              </View> 
+ 
+              {/* Tooltip positioned relative to Svg */} 
+              <View style={styles.stabilityTooltip}> 
+                <Text style={styles.stabilityTooltipText}>Stability</Text> 
+                <Text style={styles.stabilityTooltipText}>Improving</Text> 
+                <View style={styles.stabilityTooltipArrow} /> 
+              </View> 
+            </View> 
+          </View> 
+        </View> 
+      </View> 
+    </View> 
+  ); 
+}; 
 
-  useEffect(() => {
-    progress.value = withTiming(1, { duration: 1500, easing: Easing.out(Easing.exp) });
-    opacity.value = withDelay(500, withTiming(1, { duration: 800 }));
-  }, []);
-
-  const points = data.map((d, i) => ({
-    x: (i * chartWidth) / (data.length - 1),
-    y: chartHeight - (d.value - 20) * 8,
-  }));
-
-  const animatedAreaProps = useAnimatedProps(() => {
-    'worklet';
-    const p = progress.value;
-    let d = `M ${points[0].x} ${chartHeight - (chartHeight - points[0].y) * p}`;
-    for (let i = 1; i < points.length; i++) {
-      const pt = points[i];
-      d += ` L ${pt.x} ${chartHeight - (chartHeight - pt.y) * p}`;
-    }
-    d += ` L ${chartWidth} ${chartHeight} L 0 ${chartHeight} Z`;
-    return { d };
-  });
-
-  const animatedLineProps = useAnimatedProps(() => {
-    'worklet';
-    const p = progress.value;
-    let d = `M ${points[0].x} ${chartHeight - (chartHeight - points[0].y) * p}`;
-    for (let i = 1; i < points.length; i++) {
-      const pt = points[i];
-      d += ` L ${pt.x} ${chartHeight - (chartHeight - pt.y) * p}`;
-    }
-    return { d };
-  });
-
-  return (
-    <View style={{ marginBottom: 20 }}>
-      <Text style={{ 
-        fontSize: 16, 
-        fontWeight: '600', 
-        color: '#000000', 
-        marginBottom: 12, 
-        marginLeft: 16,
-        letterSpacing: -0.32,
-        lineHeight: 16,
-      }}>Stability Summary</Text>
-      
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardSubtitle}>Based on your recent logs and symptom patterns.</Text>
-        </View>
-        
-        <View style={styles.stabilityScoreContainer}>
-          <Text style={styles.stabilityScoreLabel}>Stability Score</Text>
-          <Text style={styles.stabilityScoreValue}>{MOCK_DATA.stability.score}%</Text>
-        </View>
-        
-        <View style={styles.chartWrapper}>
-          <View style={styles.yAxis}>
-            <Text style={styles.axisText}>32d</Text>
-            <Text style={styles.axisText}>28d</Text>
-            <Text style={styles.axisText}>24d</Text>
-          </View>
-
-          <View style={styles.chartArea}>
-            <Svg width={chartWidth} height={chartHeight}>
-              <Defs>
-                <LinearGradient id="purpleGrad" x1="0" y1="0" x2="1" y2="1">
-                  <Stop offset="0" stopColor="#EBEBFF" stopOpacity="0.8" />
-                  <Stop offset="1" stopColor="#F5F5FF" stopOpacity="0.2" />
-                </LinearGradient>
-                <LinearGradient id="bandGrad" x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0" stopColor="#BCA7FD" stopOpacity="0.4" />
-                  <Stop offset="1" stopColor="#BCA7FD" stopOpacity="0.1" />
-                </LinearGradient>
-              </Defs>
-
-              <AnimatedPath 
-                animatedProps={useAnimatedProps(() => {
-                  'worklet';
-                  const p = progress.value;
-                  let d = `M 0 ${chartHeight}`;
-                  for (let i = 0; i < points.length; i++) {
-                    const pt = points[i];
-                    d += ` L ${pt.x} ${chartHeight - (chartHeight - pt.y) * p}`;
-                  }
-                  d += ` L ${chartWidth} ${chartHeight} Z`;
-                  return { d };
-                })} 
-                fill="#D8CCFE"
-                opacity={0.25}
-              />
-              
-              <AnimatedPath 
-                animatedProps={useAnimatedProps(() => {
-                  'worklet';
-                  const p = progress.value;
-                  
-                  // Calculate upper and lower points for the band
-                  let d = `M 0 ${chartHeight - (chartHeight - (points[0].y - 12)) * p}`;
-                  
-                  // Forward for upper points
-                  for (let i = 1; i < points.length; i++) {
-                    const pt = points[i];
-                    d += ` L ${pt.x} ${chartHeight - (chartHeight - (pt.y - 12)) * p}`;
-                  }
-                  
-                  // Backward for lower points to close the shape
-                  for (let i = points.length - 1; i >= 0; i--) {
-                    const pt = points[i];
-                    d += ` L ${pt.x} ${chartHeight - (chartHeight - (pt.y + 12)) * p}`;
-                  }
-                  
-                  d += ' Z';
-                  return { d };
-                })} 
-                fill="#BCA7FD"
-                opacity={0.6}
-              />
-
-              <AnimatedPath 
-                animatedProps={animatedLineProps}
-                stroke="#BCA7FD" 
-                strokeWidth="2.5" 
-                fill="none" 
-              />
-              
-              <Line 
-                x1={points[2].x} y1={0} x2={points[2].x} y2={chartHeight} 
-                stroke="#8E9E9E" strokeWidth="1.5" strokeDasharray="5 5" 
-              />
-              
-              <AnimatedCircle 
-                cx={points[2].x} 
-                animatedProps={useAnimatedProps(() => {
-                  'worklet';
-                  return {
-                    cy: chartHeight - (chartHeight - points[2].y) * progress.value 
-                  };
-                })} 
-                r="6" 
-                fill="#8E9E9E" 
-              />
-            </Svg>
-
-            <Animated.View 
-              style={[
-                styles.tooltipContainer, 
-                { left: points[2].x - 45 }, 
-                useAnimatedStyle(() => ({
-                  opacity: opacity.value,
-                  transform: [
-                    { translateY: (chartHeight - (chartHeight - points[2].y) * progress.value) - 75 }
-                  ]
-                }))
-              ]}
-            >
-              <View style={[styles.tooltipBox, { backgroundColor: '#000000', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, minWidth: 100, alignItems: 'center' }]}>
-                <Text style={[styles.tooltipTitle, { color: '#FFFFFF', fontSize: 13, fontWeight: '600', marginBottom: 2 }]}>Stability</Text>
-                <Text style={[styles.tooltipSub, { color: '#FFFFFF', fontSize: 13, opacity: 0.9 }]} numberOfLines={1}>Improving</Text>
-              </View>
-              <View style={[styles.tooltipArrow, { borderTopColor: '#000000' }]} />
-            </Animated.View>
-
-            <View style={styles.xAxis}>
-              {data.map((d, i) => (
-                <Text key={i} style={[styles.axisText, d.month === 'Mar' && styles.axisTextActive]}>
-                  {d.month}
-                </Text>
-              ))}
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-};
 
 const DropIcon = ({ color }: { color: string }) => (
-  <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+  <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
     <Path
       d="M12 21.5C15.5899 21.5 18.5 18.5899 18.5 15C18.5 11.4101 12 3 12 3C12 3 5.5 11.4101 5.5 15C5.5 18.5899 8.41015 21.5 12 21.5Z"
       stroke={color}
@@ -344,7 +285,7 @@ const CycleTrendBar = ({ item, index, progress, standardTotal, standardHeight, g
           </View>
           {/* Red Segment */}
           <View style={[styles.barSegment, styles.redSegment, { bottom: item.redBottom } as any]}>
-            <DropIcon color="rgba(255,255,255,0.9)" />
+            <DropIcon color="#FFF" />
           </View>
         </AnimatedView>
       </View>
@@ -365,15 +306,7 @@ const CycleTrends = () => {
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <Text style={{ 
-        fontSize: 16, 
-        fontWeight: '600', 
-        color: '#000000', 
-        marginBottom: 12, 
-        marginLeft: 16,
-        letterSpacing: -0.32,
-        lineHeight: 16,
-      }}>Cycle Trends</Text>
+      <Text style={styles.sectionTitle}>Cycle Trends</Text>
       
       <View style={styles.card}>
         <View style={styles.cycleChartContainer}>
@@ -491,26 +424,12 @@ const BodyMetabolicTrends = () => {
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <Text style={{ 
-        fontSize: 16, 
-        fontWeight: '600', 
-        color: '#000000', 
-        marginBottom: 12, 
-        marginLeft: 16,
-        letterSpacing: -0.32,
-        lineHeight: 16,
-      }}>Body & Metabolic Trends</Text>
+      <Text style={styles.sectionTitle}>Body & Metabolic Trends</Text>
       <View style={styles.card}>
         <View style={styles.cardHeaderRow}>
           <View>
-            <Text style={{ 
-              fontSize: 14, 
-              fontWeight: '500', 
-              color: '#000000', 
-              letterSpacing: 0,
-              lineHeight: 14,
-            }}>Your weight</Text>
-            <Text style={[styles.cardSubtitle, { fontSize: 16, color: '#9CA3AF' }]}>in kg</Text>
+            <Text style={styles.cardTitle}>Your weight</Text>
+            <Text style={[styles.cardSubtitle, { fontSize: 18, color: '#9CA3AF' }]}>in kg</Text>
           </View>
           <View style={[styles.segmentedControl, { backgroundColor: '#F9FAFB', borderRadius: 24, padding: 4, minWidth: 160 }]}>
             <TouchableOpacity 
@@ -550,9 +469,9 @@ const BodyMetabolicTrends = () => {
           <Svg width={chartWidth} height={chartHeight + 40} style={{ overflow: 'visible' }}>
             <Defs>
               <LinearGradient id="metabolicGrad" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#F48E8E" stopOpacity="0.3" />
-                <Stop offset="0.8" stopColor="#F48E8E" stopOpacity="0.05" />
-                <Stop offset="1" stopColor="#F48E8E" stopOpacity="0" />
+                <Stop offset="0" stopColor="#E99597" stopOpacity="0.3" />
+                <Stop offset="0.8" stopColor="#E99597" stopOpacity="0.05" />
+                <Stop offset="1" stopColor="#E99597" stopOpacity="0" />
               </LinearGradient>
             </Defs>
 
@@ -587,7 +506,7 @@ const BodyMetabolicTrends = () => {
             />
             <Path 
               d={linePath} 
-              stroke="#F48E8E" 
+              stroke="#E99597" 
               strokeWidth="3.5" 
               fill="none" 
               strokeLinecap="round"
@@ -609,7 +528,7 @@ const BodyMetabolicTrends = () => {
                   cx={p.x} 
                   cy={p.y} 
                   r="4.5" 
-                  fill="#F48E8E" 
+                  fill="#E99597" 
                 />
               </G>
             ))}
@@ -646,24 +565,10 @@ const BodySignals = () => {
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <Text style={{ 
-        fontSize: 16, 
-        fontWeight: '600', 
-        color: '#000000', 
-        marginBottom: 12, 
-        marginLeft: 16,
-        letterSpacing: -0.32,
-        lineHeight: 16,
-      }}>Body Signals</Text>
+      <Text style={styles.sectionTitle}>Body Signals</Text>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={{ 
-            fontSize: 16, 
-            fontWeight: '600', 
-            color: '#000000', 
-            letterSpacing: -0.32,
-            lineHeight: 16,
-          }}>Symptom Trends</Text>
+          <Text style={styles.cardTitle}>Symptom Trends</Text>
           <Text style={[styles.cardSubtitle, { fontSize: 18, color: '#9CA3AF' }]}>Compared to last cycle</Text>
         </View>
       
@@ -688,8 +593,8 @@ const BodySignals = () => {
             </LinearGradient>
           </Defs>
           {MOCK_DATA.bodySignals.map((item, index) => {
-            // Add a tiny overlap (0.5%) to each segment to ensure no gaps between them
-            const effectivePercentage = item.percentage + 0.5;
+            // Add a tiny overlap (1.0%) to each segment to ensure no gaps between them
+            const effectivePercentage = item.percentage + 1.0;
             const strokeDashoffset = circumference - (effectivePercentage / 100) * circumference;
             const rotation = (currentOffset / 100) * 360;
             currentOffset += item.percentage;
@@ -710,7 +615,7 @@ const BodySignals = () => {
                 strokeWidth={strokeWidth}
                 strokeDasharray={`${circumference} ${circumference}`}
                 strokeDashoffset={strokeDashoffset}
-                transform={`rotate(${rotation - 90.5} ${center} ${center})`}
+                transform={`rotate(${rotation - 90} ${center} ${center})`}
                 fill="none"
               />
             );
@@ -769,24 +674,10 @@ const getDonutLabelStyle = (index: number) => {
 const LifestyleImpact = () => {
   return (
     <View style={{ marginTop: 20, marginBottom: 20 }}>
-      <Text style={{ 
-        fontSize: 16, 
-        fontWeight: '600', 
-        color: '#000000', 
-        marginBottom: 12, 
-        marginLeft: 16,
-        letterSpacing: -0.32,
-        lineHeight: 16,
-      }}>Lifestyle Impact</Text>
+      <Text style={styles.sectionTitle}>Lifestyle Impact</Text>
       <View style={styles.card}>
         <View style={styles.cardHeaderRow}>
-          <Text style={{ 
-            fontSize: 16, 
-            fontWeight: '600', 
-            color: '#000000', 
-            letterSpacing: -0.32,
-            lineHeight: 16,
-          }}>Correlation Strength</Text>
+          <Text style={styles.cardTitle}>Correlation Strength</Text>
           <TouchableOpacity style={[styles.pill, { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F9FAFB', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 }]}>
             <Text style={[styles.pillText, { fontSize: 14, color: '#667085' }]}>4 months</Text>
             <Svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginLeft: 6 }}>
@@ -895,29 +786,32 @@ const HomeIndicator = () => (
 
 const InsightsScreen = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <HeaderNavigation />
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        contentContainerStyle={styles.scrollContent}
-      >
-        <StabilitySummary />
-        <CycleTrends />
-        <BodyMetabolicTrends />
-        <BodySignals />
-        <LifestyleImpact />
-        <View style={{ height: 100 }} />
-      </ScrollView>
-      <CustomBottomTabBar />
-      <HomeIndicator />
-    </SafeAreaView>
+    <View style={styles.container}>
+      <ScreenBackground />
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+        <HeaderNavigation />
+        <ScrollView 
+          showsVerticalScrollIndicator={false} 
+          contentContainerStyle={styles.scrollContent}
+        >
+          <StabilitySummary />
+          <CycleTrends />
+          <BodyMetabolicTrends />
+          <BodySignals />
+          <LifestyleImpact />
+          <View style={{ height: 100 }} />
+        </ScrollView>
+        <CustomBottomTabBar />
+        <HomeIndicator />
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF5F7', // Subtle light-pink gradient equivalent
+    backgroundColor: '#F5FAF9', 
   },
   header: {
     flexDirection: 'row',
@@ -938,18 +832,18 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#FFF',
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
       },
       android: {
-        elevation: 3,
+        elevation: 2,
       },
     }),
   },
@@ -971,9 +865,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#101828',
+    lineHeight: 16,
+    letterSpacing: -0.32,
   },
   cardSubtitle: {
     fontSize: 14,
@@ -986,9 +882,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#101828',
+    lineHeight: 16,
+    letterSpacing: -0.32,
+    marginLeft: 16,
+    marginBottom: 12,
   },
   stabilityScoreContainer: {
     marginBottom: 20,
@@ -1336,7 +1236,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6B8E8E',
   },
   redSegment: {
-    backgroundColor: '#F48E8E',
+    backgroundColor: '#E99597',
   },
   barMonthText: {
     marginTop: 12,
@@ -1386,6 +1286,105 @@ const styles = StyleSheet.create({
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderTopColor: '#101828',
+  },
+  stabilityContainer: {
+    marginBottom: 32,
+  },
+  stabilityCardContainer: {
+    alignSelf: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+    overflow: 'hidden',
+  },
+  stabilityContent: {
+    padding: 20,
+    paddingTop: 18,
+    flex: 1,
+  },
+  stabilityDescription: {
+    color: '#6B7280',
+    fontSize: 18,
+    lineHeight: 22,
+    marginBottom: 12,
+    fontWeight: '400',
+  },
+  stabilityScoreBox: {
+    marginBottom: 8,
+  },
+  stabilityScoreLabelText: {
+    fontSize: 17,
+    color: '#000',
+    fontWeight: '500',
+  },
+  stabilityScoreValueText: {
+    fontSize: 38,
+    fontWeight: '800',
+    color: '#000',
+    marginTop: -4,
+  },
+  stabilityChartBox: {
+    flexDirection: 'row',
+    marginTop: 5,
+    height: 140,
+  },
+  stabilityYAxisLabels: {
+    width: 35,
+    height: 115,
+    justifyContent: 'space-between',
+    paddingTop: 15,
+    paddingBottom: 5,
+    marginRight: 5,
+  },
+  stabilitySvgWrapper: {
+    flex: 1,
+    position: 'relative',
+    height: 120,
+  },
+  stabilityXAxisLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 2,
+    paddingHorizontal: 8,
+  },
+  stabilityAxisText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'right',
+    fontWeight: '400',
+  },
+  stabilityAxisTextBold: {
+    fontWeight: '700',
+    color: '#000',
+  },
+  stabilityTooltip: {
+    position: 'absolute',
+    top: -35,
+    left: '66%',
+    backgroundColor: '#000',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    transform: [{ translateX: -40 }],
+    zIndex: 10,
+  },
+  stabilityTooltipText: {
+    color: '#FFF',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  stabilityTooltipArrow: {
+    position: 'absolute',
+    bottom: -4,
+    width: 10,
+    height: 10,
+    backgroundColor: '#000',
+    transform: [{ rotate: '45deg' }],
   },
 });
 
