@@ -76,7 +76,7 @@ const MOCK_DATA = {
   
   bodySignals: [
     { label: 'Bloating', percentage: 31, color: '#D6D6FB' },
-    { label: 'Fatigue', percentage: 22, color: '#F8B4B4' },
+    { label: 'Fatigue', percentage: 21, color: '#F8B4B4' },
     { label: 'Acne', percentage: 17, color: '#A9D1A9' },
     { label: 'Mood', percentage: 30, color: '#FADBD8' },
   ],
